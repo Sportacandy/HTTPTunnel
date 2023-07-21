@@ -194,7 +194,8 @@
 				continue;
 			}
 			
-			if ($rin[0]==$ipsock) {
+			foreach ($rin as $is) {			
+			if ($is==$ipsock) {
 				// ok, we got an interprocess connecting, that means were piping the data from $ipsock to $rmsock
 				if (($c_ipsock=stream_socket_accept ($ipsock))===false) continue;
 				$inbuf='';
@@ -258,7 +259,7 @@
 				}
 			}
 
-			elseif (($rmsock && $rin[0]==$rmsock) || ($usock && $rin[0]==$usock)) {
+			elseif (($rmsock && $is==$rmsock) || ($usock && $is==$usock)) {
 				// we got data coming in from the remote port, lets dump it to the client
 				if (($copts & 24) == 8) { # BIND should accept the connection
 					logline (4,"$ident: client trying to connect to bound socket");
@@ -290,7 +291,7 @@
 					logline (2,"$ident: Sent ".$outcount." bytes, received ".$incount." bytes");
 					exit;
 				}
-				if ($rin[0]==$usock) $buf=stream_socket_recvfrom($usock,65536,0,$addr);
+				if ($is==$usock) $buf=stream_socket_recvfrom($usock,65536,0,$addr);
 				else $buf=fread($rmsock,65536);
 				$i=strlen($buf);
 
@@ -308,6 +309,7 @@
 					echo base64_encode($buf)."\n";
 					if ($ka) $nk=time()+$ki;
 				}
+			}
 			}
 		}
 	}
